@@ -63,7 +63,7 @@ STYLECHECKFILES	:= $(shell find . -name '*.[ch]')
 
 LDSCRIPT	?= $(BINARY).ld
 
-OBJS		+= $(BINARY).o usbfunctions.o 
+OBJS		+= $(BINARY).o usbfunctions.o queue.o 
 
 
 ifeq ($(strip $(OPENCM3_DIR)),)

@@ -24,8 +24,44 @@
 #include <libopencm3/usb/cdc.h>
 #include <libopencm3/cm3/nvic.h>
 #include <libopencm3/cm3/systick.h>
+#include "queue.h"
+#include "usbfunctions.h"
 
+struct Queue usb_tx_q,usb_rx_q;
 usbd_device *usbd_dev;
+
+uint8_t usb_getc(void){
+  uint8_t data;
+//  uint8_t enabled=nvic_get_irq_enabled(NVIC_USB_LP_CAN_RX0_IRQ);
+//  nvic_disable_irq(NVIC_USB_LP_CAN_RX0_IRQ);
+  while(!Dequeue(&usb_rx_q,&data));
+//  if(enabled){
+//    nvic_enable_irq(NVIC_USB_LP_CAN_RX0_IRQ);
+//  }
+  return data;
+}
+
+void usb_putc(uint8_t c){
+  while(!Enqueue(&usb_tx_q,c));
+}
+  
+void usb_timer_callback(void){
+  //char out[2];
+  //out[0]='a';
+  //out[1]='b';
+  //usbd_ep_write_packet(usbd_dev,0x82,out,2);
+  uint8_t c;
+  /*Disable timer interrupt? Lock? Check usb_send status?*/
+  if(Dequeue(&usb_tx_q,&c)){
+     if(usbd_dev)
+       usbd_ep_write_packet(usbd_dev,0x82,&c,1);
+  }
+}
+      
+
+
+
+
 static const struct usb_device_descriptor dev = {
 	.bLength = USB_DT_DEVICE_SIZE,
 	.bDescriptorType = USB_DT_DEVICE,
@@ -211,9 +247,13 @@ static void cdcacm_data_rx_cb(usbd_device *usbd_dev, uint8_t ep)
 {
 	(void)ep;
 	(void)usbd_dev;
+    int i;
 
 	char buf[64];
 	int len = usbd_ep_read_packet(usbd_dev, 0x01, buf, 64);
+    for(i=0;i<len;i++){
+      Enqueue(&usb_rx_q,buf[i]);
+    }
 
 }
 
