@@ -25,6 +25,7 @@
 #include "usbfunctions.h"
 #include <errno.h>
 #include <stdio.h>
+#include "irled.h"
 
 #define SYSTICK_RELOAD_PERIOD 624 //(72000000/((115200/8)*8))
 #define SYSTICK_STARTUP_DELAY 1000
@@ -117,7 +118,10 @@ int main(void)
     out_buf[0]='a';
     out_buf[1]='b';
     out_buf_len=2;
-
+    
+    setup_irled_gpio();
+    setup_irled_timer();
+    setup_transmission_timer();
 	while (1){
 		//usbd_poll(usbd_dev);
           printf("cmd:\n\r");
