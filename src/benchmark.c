@@ -25,6 +25,7 @@
 #include "usbfunctions.h"
 #include <errno.h>
 #include <stdio.h>
+#include <string.h>
 #include "irled.h"
 
 #define SYSTICK_RELOAD_PERIOD 624 //(72000000/((115200/8)*8))
@@ -107,6 +108,7 @@ static void read_string(int len, char *my_buffer){
 int main(void)
 {
 	int i;
+    uint8_t packet[]={0x0a,0xa0,0xaa,0xef};
 
 
 	rcc_clock_setup_in_hsi_out_48mhz();
@@ -127,6 +129,11 @@ int main(void)
           printf("cmd:\n\r");
           read_string(255,cmdline);
           printf("Got cmd: %s\n\r",cmdline);
+          if(strcmp(cmdline,"send")==0)
+          {
+            program_nec_code(packet,4);  
+            start_blinking();
+          }
     }
 
 }

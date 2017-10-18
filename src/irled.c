@@ -43,6 +43,7 @@ void setup_irled_gpio(void)
         GPIO_CNF_OUTPUT_ALTFN_PUSHPULL,GPIO_TIM4_CH1);
     gpio_set_mode(GPIOB,GPIO_MODE_OUTPUT_2_MHZ,
         GPIO_CNF_OUTPUT_PUSHPULL,GPIO7);
+    gpio_set(GPIOB,GPIO7);
 }
 
 void setup_transmission_timer(void)
@@ -56,7 +57,7 @@ void setup_transmission_timer(void)
     timer_reset(timer);
 
     timer_set_mode(timer,TIM_CR1_CKD_CK_INT,TIM_CR1_CMS_EDGE,TIM_CR1_DIR_UP);
-    timer_set_period(timer,65535);
+    timer_set_period(timer,13520*2-1);
     timer_set_prescaler(timer,0);
     
 
@@ -80,7 +81,7 @@ void program_nec_code(uint8_t *data, uint8_t len)
   {
     for(j=0;j<8;j++)
     {
-      if(data[i]&(1>>j))
+      if(data[i]&(1<<j))
       {
         commands[offset].time_len=ONE_ON_DELAY;
         commands[offset].action=LED_ON;
@@ -131,7 +132,7 @@ void tim2_isr(void)
           break;
         case LED_ON:
           gpio_clear(GPIOB,GPIO7);
-          if(cmd_time<commands[cmd_idx].time_len)
+          if(cmd_time<(commands[cmd_idx].time_len-1))
           {
             cmd_time++;
           }
@@ -143,7 +144,7 @@ void tim2_isr(void)
           break;
         case LED_OFF:
           gpio_set(GPIOB,GPIO7);
-          if(cmd_time<commands[cmd_idx].time_len)
+          if(cmd_time<(commands[cmd_idx].time_len-1))
           {
             cmd_time++;
           }
@@ -154,13 +155,13 @@ void tim2_isr(void)
           }
           break;
       }
-      if(cmd_idx>60)
+      if(cmd_idx>(CMD_ARRAY_LEN-1))
       {
         cmd_idx=0;
         start_blink=0;
       }
     }
-    gpio_toggle(GPIOB,GPIO7);
+    //gpio_toggle(GPIOB,GPIO7);
     timer_clear_flag(TIM2,TIM_SR_UIF);
   }
 }
