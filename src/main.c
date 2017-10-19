@@ -30,6 +30,7 @@
 
 #define SYSTICK_RELOAD_PERIOD 624 //(72000000/((115200/8)*8))
 #define SYSTICK_STARTUP_DELAY 1000
+#define GPIO_PWR GPIO5
 volatile uint32_t startup_counter=0;
 
 int _write(int file, char *ptr, int len);
@@ -144,6 +145,8 @@ int main(void)
     setup_irled_gpio();
     setup_irled_timer();
     setup_transmission_timer();
+    
+    gpio_set_mode(GPIOB,GPIO_MODE_OUTPUT_2_MHZ,GPIO_CNF_OUTPUT_PUSHPULL,GPIO_PWR); 
 	while (1){
 		//usbd_poll(usbd_dev);
           //printf("\n\rcmd");
@@ -166,6 +169,17 @@ int main(void)
                    program_nec_code(packet,4);  
                    start_blinking();
                    while(is_blinking());
+              }
+          }
+          else if(2==argc && strcmp(args[0],"pwr")==0)
+          {
+              if(strcmp(args[1],"on")==0)
+              {
+                  gpio_set(GPIOB,GPIO_PWR);
+              }
+              else if(strcmp(args[1],"off")==0)
+              {   
+                  gpio_clear(GPIOB,GPIO_PWR);
               }
           }
           else
