@@ -1,0 +1,3 @@
+NEC remote protocol+USB-CDC control.
+Board: maple mini
+Should be programmed with st-link, not suitable for maple-mini-bootloader
