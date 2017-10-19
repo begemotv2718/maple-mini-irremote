@@ -42,7 +42,7 @@ void setup_irled_gpio(void)
     gpio_set_mode(GPIOB,GPIO_MODE_OUTPUT_50_MHZ,
         GPIO_CNF_OUTPUT_ALTFN_PUSHPULL,GPIO_TIM4_CH1);
     gpio_set_mode(GPIOB,GPIO_MODE_OUTPUT_2_MHZ,
-        GPIO_CNF_OUTPUT_PUSHPULL,GPIO7);
+        GPIO_CNF_OUTPUT_OPENDRAIN,GPIO7);
     gpio_set(GPIOB,GPIO7);
 }
 

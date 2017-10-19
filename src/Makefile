@@ -19,7 +19,7 @@
 ## along with this library.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-BINARY = benchmark
+BINARY = main
 
 LDSCRIPT = stm32-maple.ld
 

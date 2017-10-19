@@ -23,7 +23,7 @@ struct led_prg_command {
 #define START_PULSE_ON_DELAY (16U)
 #define START_PULSE_OFF_DELAY (8U)
 #define ONE_ON_DELAY (1U)
-#define ONE_OFF_DELAY (2U)
+#define ONE_OFF_DELAY (3U)
 #define ZERO_ON_DELAY (1U)
 #define ZERO_OFF_DELAY (1U)
 #endif  

@@ -105,9 +105,29 @@ static void read_string(int len, char *my_buffer){
 	return;
 }
 
+#define MAX_ARG_LEN (10)
+char *args[MAX_ARG_LEN];
+
+static int parse_args(char *line)
+{
+    char *savedptr;
+    char *curr;
+    int argc=0;
+    curr=strtok_r(line," \t\n\r",&savedptr);
+    while(curr && argc<(MAX_ARG_LEN-1))
+    {
+      args[argc]=curr;
+      curr=strtok_r(NULL," \t\n\r",&savedptr);
+      argc++;
+    }
+    return argc;
+}
+
+
+
+
 int main(void)
 {
-	int i;
     uint8_t packet[]={0x0a,0xa0,0xaa,0xef};
 
 
@@ -126,13 +146,37 @@ int main(void)
     setup_transmission_timer();
 	while (1){
 		//usbd_poll(usbd_dev);
-          printf("cmd:\n\r");
+          //printf("\n\rcmd");
           read_string(255,cmdline);
           printf("Got cmd: %s\n\r",cmdline);
-          if(strcmp(cmdline,"send")==0)
+          int argc = parse_args(cmdline);
+          if(5==argc && strcmp(args[0],"send")==0)
           {
-            program_nec_code(packet,4);  
-            start_blinking();
+              int i;
+              errno=0;
+              for(i=0;i<4;i++)
+              { 
+                  int32_t res=strtol(args[i+1],NULL,16);
+                  if(errno || res<0 || res>255)
+                    break;
+                  packet[i]=(uint8_t)res;
+              }
+              if(!errno)
+              {
+                   program_nec_code(packet,4);  
+                   start_blinking();
+                   while(is_blinking());
+              }
+          }
+          else
+          {
+              printf("parsed: ");
+              int i;
+              for(i=0;i<argc;i++)
+              {
+                   printf("%s ",args[i]);
+              }
+              printf("\n");
           }
     }
 

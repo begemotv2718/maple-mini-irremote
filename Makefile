@@ -6,4 +6,4 @@ libopencm3:
 	$(MAKE) -C libopencm3
 
 firmware:
-	$(MAKE) -C src/ benchmark.bin	
+	$(MAKE) -C src/ main.bin	
