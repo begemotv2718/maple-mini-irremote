@@ -101,6 +101,9 @@ void program_nec_code(uint8_t *data, uint8_t len)
       }
     }
   }
+  commands[offset].action=LED_ON;
+  commands[offset].time_len=ZERO_ON_DELAY;
+  offset++;
   commands[offset].action=STOP;
 }
 
